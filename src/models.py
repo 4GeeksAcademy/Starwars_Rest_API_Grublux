@@ -6,7 +6,6 @@ class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), unique=False, nullable=False)
-    is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     username = db.Column(db.String(120), unique=True, nullable=False)
 
 
@@ -64,10 +63,7 @@ class Favorites(db.Model):
     fav_user = db.relationship('User', backref='favorites', lazy=True)
     entity_type = db.Column(db.String(100), nullable=False)
     entity_id = db.Column(db.Integer, nullable=False)
-    fav_name = db.Column(db.String(100), nullable=False)
-
-    # def add_favorite(self):
-        
+    fav_name = db.Column(db.String(100), nullable=False)      
 
     def __repr__(self):
         return '<Fav entity_type=%r, entity_id=%r, fav_name=%r, fav_user=%r>' % (self.entity_type, self.entity_id, self.fav_name, self.fav_user_id)

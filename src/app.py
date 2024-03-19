@@ -54,6 +54,17 @@ def handle_single_user(id):
 
     return jsonify(response_body), 200
 
+@app.route('/user', methods=['POST'])
+def handle_add_user():
+    request_body = request.json
+    new_user = User(email = request_body['email'],
+                    password = request_body['password'],
+                    username = request_body['username']
+                    )
+    db.session.add(new_user)
+    db.session.commit()
+    return jsonify(f'new user {new_user} created'), 200
+
 
 @app.route('/character', methods=['GET'])
 def handle_character():
@@ -121,6 +132,13 @@ def handle_post():
     db.session.add(new_favorite)
     db.session.commit()
     return jsonify(f'new favorite {new_favorite} successfully created'), 200
+
+@app.route('/favorites/<id>', methods=['DELETE'])
+def handle_delete(id):
+    del_favorite = Favorites.query.get(id)
+    db.session.delete(del_favorite)
+    db.session.commit()
+    return jsonify(f'{del_favorite} deleted'), 200
 
     
 
