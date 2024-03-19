@@ -9,6 +9,7 @@ class User(db.Model):
     is_active = db.Column(db.Boolean(), unique=False, nullable=False)
     username = db.Column(db.String(120), unique=True, nullable=False)
 
+
     def __repr__(self):
         return '<User %r>' % self.username
 
@@ -28,6 +29,9 @@ class Character(db.Model):
     char_habitat = db.Column(db.Integer, db.ForeignKey('habitat.id'), nullable=False)
     habitat = db.relationship('Habitat', backref='character', lazy=True)
 
+    def __repr__(self):
+        return '<Character %r>' % self.char_name
+
     def serialize(self):
         return {
             "id": self.id,
@@ -41,6 +45,7 @@ class Habitat(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     habitat_name = db.Column(db.String(120), unique=True, nullable=False)
     habitat_description = db.Column(db.String(240), unique=False, nullable=False)
+    
 
     def __repr__(self):
         return '<Habitat %r>' % self.habitat_name
@@ -56,7 +61,25 @@ class Habitat(db.Model):
 class Favorites(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     fav_user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    character_id = db.Column(db.Integer, db.ForeignKey('character.id'), nullable=True)
-    habitat_id = db.Column(db.Integer, db.ForeignKey('habitat.id'), nullable=True)
-    habitat = db.relationship('Habitat', backref='favorites', lazy=True)
+    fav_user = db.relationship('User', backref='favorites', lazy=True)
+    entity_type = db.Column(db.String(100), nullable=False)
+    entity_id = db.Column(db.Integer, nullable=False)
+    fav_name = db.Column(db.String(100), nullable=False)
+
+    # def add_favorite(self):
+        
+
+    def __repr__(self):
+        return '<Fav entity_type=%r, entity_id=%r, fav_name=%r, fav_user=%r>' % (self.entity_type, self.entity_id, self.fav_name, self.fav_user_id)
+    
+    def serialize(self):
+        return {
+            "id": self.id,
+            "user_id": self.fav_user_id,            
+            "entity_id": self.entity_id,
+            "entity_type": self.entity_type,
+            "fav_name": self.fav_name
+            # "habitat_name": [habitat.serialize() for habitat in self.habitat]
+            # do not serialize the password, its a security breach
+        }
 

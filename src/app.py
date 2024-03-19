@@ -54,12 +54,22 @@ def handle_single_user(id):
 
     return jsonify(response_body), 200
 
+
 @app.route('/character', methods=['GET'])
 def handle_character():
 
     all_character = Character.query.all()
 
     response_body = list(map(lambda x: x.serialize(), all_character))
+
+    return jsonify(response_body), 200
+
+@app.route('/character/<int:id>', methods=['GET'])
+def handle_single_character(id):
+
+    character = Character.query.get(id)
+
+    response_body = character.serialize()
 
     return jsonify(response_body), 200
 
@@ -71,6 +81,50 @@ def handle_habitat():
     response_body = list(map(lambda x: x.serialize(), all_habitat))
 
     return jsonify(response_body), 200
+
+@app.route('/habitat/<int:id>', methods=['GET'])
+def handle_single_habitat(id):
+
+    habitat =Habitat.query.get(id)
+
+    response_body = habitat.serialize()
+
+    return jsonify(response_body), 200
+
+@app.route('/user/<int:id>/favorites', methods=['GET'])
+def handle_single_user_favorites(id):
+
+    get_favorites = Favorites.query.filter_by(fav_user_id =id)
+    user_favorites = list(map(lambda x: x.serialize(), get_favorites))
+
+    response_body = user_favorites
+
+
+    return jsonify(response_body), 200
+
+@app.route('/favorites', methods=['GET'])
+def handle_favorites():
+
+    all_favorites = Favorites.query.all()
+
+    response_body = list(map(lambda x: x.serialize(), all_favorites))
+
+    return jsonify(response_body), 200
+
+@app.route('/favorites', methods=['POST'])
+def handle_post():
+    request_body = request.json
+    new_favorite = Favorites(fav_user_id = request_body['user_id'],
+                             entity_id = request_body['entity_id'],
+                             entity_type = request_body['entity_type'],
+                             fav_name = request_body['fav_name'])
+    db.session.add(new_favorite)
+    db.session.commit()
+    return jsonify(f'new favorite {new_favorite} successfully created'), 200
+
+    
+
+
 
 
 # this only runs if `$ python src/app.py` is executed
